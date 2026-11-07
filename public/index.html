@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aura: gesture control for your room</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Hanken+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body data-relay="unknown">
+  <div class="glow" aria-hidden="true"></div>
+
+  <header class="top">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 40 40" aria-hidden="true">
+        <rect width="40" height="40" rx="12" fill="#16202A"/>
+        <circle cx="20" cy="20" r="7" fill="none" stroke="#fff" stroke-width="2"/>
+        <circle cx="20" cy="20" r="2.5" fill="#E5A00D"/>
+      </svg>
+      <div>
+        <h1>Aura</h1>
+        <p>Control your room with your hand</p>
+      </div>
+    </div>
+
+    <button class="conn" id="connBtn" type="button" aria-haspopup="dialog">
+      <span class="dot" id="connDot" data-tone="warn"></span>
+      <span id="connText">Connecting…</span>
+    </button>
+  </header>
+
+  <main class="layout">
+    <section class="stage" aria-label="Camera">
+      <div class="frame" id="frame">
+        <video id="video" playsinline muted></video>
+        <canvas id="overlay" aria-hidden="true"></canvas>
+
+        <div class="veil" id="veil" role="status">
+          <p class="veil-title" id="veilTitle">Starting camera…</p>
+          <p class="veil-body" id="veilBody"></p>
+        </div>
+
+        <div class="readout">
+          <div>
+            <p class="gesture-name" id="gestureName">No hand in view</p>
+            <p class="gesture-hint" id="gestureHint">Hold your hand up to the camera</p>
+          </div>
+          <div class="fingers" id="fingers" aria-hidden="true">
+            <i></i><i></i><i></i><i></i><i></i>
+          </div>
+        </div>
+
+        <div class="hold" aria-hidden="true"><i id="holdBar"></i></div>
+      </div>
+
+      <div class="tools">
+        <button class="ghost" id="pauseBtn" type="button">Pause detection <kbd>P</kbd></button>
+        <button class="ghost" id="skeletonBtn" type="button">Hide hand outline <kbd>H</kbd></button>
+        <button class="ghost" id="refreshBtn" type="button">Refresh <kbd>T</kbd></button>
+        <span class="spacer"></span>
+        <span class="fps" id="fps"></span>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <section class="relays" aria-labelledby="relaysTitle">
+        <h2 id="relaysTitle">Lights</h2>
+
+        <ul class="rows">
+          <li class="row">
+            <div>
+              <strong>Relay 1</strong>
+              <span id="r1Text">No signal</span>
+            </div>
+            <button class="switch" type="button" role="switch" aria-checked="false" aria-label="Relay 1" data-relay="1"><i></i></button>
+          </li>
+          <li class="row">
+            <div>
+              <strong>Relay 2</strong>
+              <span id="r2Text">No signal</span>
+            </div>
+            <button class="switch" type="button" role="switch" aria-checked="false" aria-label="Relay 2" data-relay="2"><i></i></button>
+          </li>
+        </ul>
+
+        <fieldset class="target">
+          <legend>Gestures and shortcuts control</legend>
+          <div class="seg">
+            <label><input type="radio" name="target" value="1" checked><span>Relay 1</span></label>
+            <label><input type="radio" name="target" value="2"><span>Relay 2</span></label>
+            <label><input type="radio" name="target" value="both"><span>Both</span></label>
+          </div>
+        </fieldset>
+
+        <p class="log" id="log" role="status" aria-live="polite">Open hand turns on. Fist turns off. Hold for a moment to confirm.</p>
+      </section>
+
+      <section class="room" aria-labelledby="roomTitle">
+        <h2 id="roomTitle">Room</h2>
+        <dl>
+          <div><dt>Temperature</dt><dd><span id="temp">--</span><small>°C</small></dd></div>
+          <div><dt>Humidity</dt><dd><span id="hum">--</span><small>%</small></dd></div>
+          <div><dt>Motion</dt><dd class="text" id="motion">--</dd></div>
+        </dl>
+      </section>
+
+      <p class="keys"><kbd>O</kbd> on &nbsp; <kbd>F</kbd> off &nbsp; <kbd>T</kbd> refresh &nbsp; <kbd>P</kbd> pause &nbsp; <kbd>H</kbd> outline</p>
+    </aside>
+  </main>
+
+  <dialog id="cfg">
+    <form method="dialog" id="cfgForm">
+      <h2>Controller address</h2>
+      <p>The address of your ESP8266, for example <code>http://server.local</code> or <code>http://192.168.1.50</code>.</p>
+      <label for="cfgUrl">Address</label>
+      <input id="cfgUrl" name="url" type="text" inputmode="url" autocomplete="off" spellcheck="false" required>
+      <p class="form-error" id="cfgError" role="alert"></p>
+      <div class="actions">
+        <button class="ghost" value="cancel" type="button" id="cfgCancel">Cancel</button>
+        <button class="primary" type="submit">Save address</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
