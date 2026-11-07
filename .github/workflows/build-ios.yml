@@ -19,36 +19,38 @@ jobs:
           cache: 'npm'
           cache-dependency-path: mobile/package.json
 
-      - name: Install Dependencies
+      - name: Install Project Dependencies
         working-directory: mobile
         run: npm install
 
       - name: Expo Prebuild (Generate native iOS project)
         working-directory: mobile
-        run: npx expo prebuild --platform ios --clean
+        run: npx expo prebuild --platform ios --clean --no-install
 
       - name: Install CocoaPods
         working-directory: mobile/ios
         run: pod install
 
-      - name: Build Xcode Archive (Unsigned)
+      - name: Build Xcode Archive (Code Signing Bypassed)
         working-directory: mobile/ios
         run: |
+          WORKSPACE=$(ls -d *.xcworkspace | head -n 1)
           xcodebuild archive \
-            -workspace Aura.xcworkspace \
-            -scheme Aura \
+            -workspace "$WORKSPACE" \
+            -scheme "Aura" \
             -configuration Release \
-            -archivePath "$PWD/build/Aura.xcarchive" \
+            -destination "generic/platform=iOS" \
+            -archivePath "$PWD/build/App.xcarchive" \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
             AD_HOC_CODE_SIGNING_ALLOWED=YES
 
-      - name: Package into .ipa
+      - name: Package App into .ipa
         working-directory: mobile/ios
         run: |
           mkdir -p Payload
-          cp -r "build/Aura.xcarchive/Products/Applications/Aura.app" Payload/
+          cp -r build/App.xcarchive/Products/Applications/*.app Payload/
           zip -r Aura.ipa Payload/
           rm -rf Payload
 
